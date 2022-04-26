@@ -3,23 +3,22 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ToDoScreen extends StatefulWidget {
+import 'notes/controller.dart';
+
+class NotesScreen extends StatefulWidget {
   @override
-  State<ToDoScreen> createState() => _ToDoScreenState();
+  State<NotesScreen> createState() => _NotesScreenState();
 }
 
-class _ToDoScreenState extends State<ToDoScreen> {
+class _NotesScreenState extends State<NotesScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  NotesController controller = NotesController();
 
-  TextEditingController taskController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
-  TextEditingController editTaskController = TextEditingController();
+  TextEditingController editTitleController = TextEditingController();
+  TextEditingController editDescripController = TextEditingController();
   TextEditingController editDateController = TextEditingController();
 
   DateTime date = DateTime(2022, 04, 18);
-
-  List<String> taskList = [];
-  List<String> datesList = [];
 
   pickDate() async {
     DateTime? newDate = await showDatePicker(
@@ -50,7 +49,6 @@ class _ToDoScreenState extends State<ToDoScreen> {
     setState(() {
       date = newDate;
       var formatDate = "${date.month}/${date.day}/${date.year}";
-      dateController.text = formatDate.toString();
       editDateController.text = formatDate.toString();
     });
   }
@@ -60,216 +58,45 @@ class _ToDoScreenState extends State<ToDoScreen> {
   }
 
   addTodo() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Add task"),
-                SizedBox(
-                  width: 10,
-                ),
-                Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                        onPressed: closeDialog, icon: Icon(Icons.close))),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Title",
-                            style: TextStyle(
-                                fontSize: 19,
-                                wordSpacing: 1.3,
-                                fontWeight: FontWeight.w500),
-                          )),
-                      SizedBox(
-                        height: 6,
-                      ),
-                      SizedBox(
-                        height: 45,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: Colors.purple,
-                                ),
-                          ),
-                          child: TextFormField(
-                            controller: taskController,
-                            keyboardType: TextInputType.name,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your title';
-                              } else if (value.length < 3) {
-                                return "Your task title is too short";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: "What needs to be done ?",
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.purple, width: 1)),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.grey, width: 1),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Date Picker",
-                            style: TextStyle(
-                                fontSize: 19,
-                                wordSpacing: 1.3,
-                                fontWeight: FontWeight.w500),
-                          )),
-                      SizedBox(
-                        height: 6,
-                      ),
-                      SizedBox(
-                        height: 45,
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: Colors.purple,
-                                ),
-                          ),
-                          child: TextFormField(
-                              controller: dateController,
-                              keyboardType: TextInputType.datetime,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your task date';
-                                } else if (value.length < 6) {
-                                  return "Your task date is too short";
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                  hintText: "Pick Date",
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.purple, width: 1)),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.grey, width: 1),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(Icons.calendar_today),
-                                    onPressed: pickDate,
-                                  ))),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 23,
-                      ),
-                      TextButton(
-                        onPressed: addTask,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: Text(
-                            "Add new task",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.purple[500]),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          );
-        });
-  }
-
-  addTask() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-    if (taskController.text == "") {
-      print("Please write todo title");
-    } else if (dateController.text == "") {
-      print("Please pick date");
-    } else {
-      setState(() {
-        taskList.add(taskController.text);
-        print(taskList);
-
-        datesList.add(dateController.text);
-        print(datesList);
-      });
-      saveNotes();
-      Navigator.of(context).pop();
-    }
+    Navigator.of(context).pushNamed("/add_note");
   }
 
   SharedPreferences? sharedPreferences;
 
-  saveNotes() async {
-    sharedPreferences = await SharedPreferences.getInstance();
-
-    List<String> saveTaskTitle = taskList.map((i) => i.toString()).toList();
-    sharedPreferences!.setStringList("notesTitleList", saveTaskTitle);
-
-    List<String> saveTaskDate = datesList.map((i) => i.toString()).toList();
-    sharedPreferences!.setStringList("notesList", saveTaskDate);
-    print(saveTaskTitle);
-    print(saveTaskDate);
-  }
-
   getNotes() async {
     sharedPreferences = await SharedPreferences.getInstance();
-    List<String>? getTaskTitleList =
+
+    List<String>? getNotesTitleList =
         sharedPreferences?.getStringList('notesTitleList');
-    taskList = getTaskTitleList!.map((e) => e.toString()).toList();
+    controller.notesTitleList =
+        getNotesTitleList!.map((e) => e.toString()).toList();
     setState(() {});
 
-    List<String>? getTaskDateList =
-        sharedPreferences?.getStringList('notesList');
-    datesList = getTaskDateList!.map((e) => e.toString()).toList();
+    List<String>? getNotesDescripList =
+        sharedPreferences?.getStringList('notesDescripList');
+    controller.notesDescripList =
+        getNotesDescripList!.map((e) => e.toString()).toList();
+    setState(() {});
+
+    List<String>? getNotesDateList =
+        sharedPreferences?.getStringList('notesDateList');
+    controller.notesDatesList =
+        getNotesDateList!.map((e) => e.toString()).toList();
     setState(() {});
   }
 
   @override
   void initState() {
-    dateController.text = "${date.month}/${date.day}/${date.year}";
     getNotes();
     super.initState();
   }
 
   deleteAll() {
     setState(() {
-      taskList.clear();
-      datesList.clear();
-      saveNotes();
+      controller.notesTitleList.clear();
+      controller.notesDescripList.clear();
+      controller.notesDatesList.clear();
+      controller.saveNotes();
     });
   }
 
@@ -286,7 +113,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
             backgroundColor: Colors.purple,
             child: Icon(Icons.add),
           ),
-          body: taskList.length < 1
+          body: controller.notesTitleList.length < 1
               ? Center(
                   child: Text(
                     "No tasks added yet",
@@ -303,13 +130,13 @@ class _ToDoScreenState extends State<ToDoScreen> {
                   Expanded(
                     child: Column(
                       children: [
-                        taskList.length > 1
+                        controller.notesTitleList.length > 1
                             ? ElevatedButton(
                                 onPressed: deleteAll, child: Text("Delete all"))
                             : Container(),
                         Expanded(
                           child: ListView.builder(
-                              itemCount: taskList.length,
+                              itemCount: controller.notesTitleList.length,
                               itemBuilder: (context, index) {
                                 return Padding(
                                     padding: const EdgeInsets.only(
@@ -324,16 +151,21 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                                 width: 1)),
                                         child: Column(
                                           children: [
+                                            Text(controller
+                                                .notesDatesList[index]),
                                             ListTile(
                                               title: Text(
-                                                taskList[index],
+                                                controller
+                                                    .notesTitleList[index],
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 17,
                                                     fontWeight:
                                                         FontWeight.w500),
                                               ),
-                                              subtitle: Text(datesList[index],
+                                              subtitle: Text(
+                                                  controller
+                                                      .notesDescripList[index],
                                                   style: TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 13)),
@@ -343,13 +175,21 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                                 children: [
                                                   IconButton(
                                                       onPressed: () {
-                                                        var editTask =
-                                                            taskList[index];
-                                                        var editDate =
-                                                            datesList[index];
+                                                        var editTitle = controller
+                                                                .notesTitleList[
+                                                            index];
+                                                        var editDescrip = controller
+                                                                .notesDescripList[
+                                                            index];
+                                                        var editDate = controller
+                                                                .notesDatesList[
+                                                            index];
                                                         setState(() {
-                                                          editTaskController
-                                                              .text = editTask;
+                                                          editTitleController
+                                                              .text = editTitle;
+                                                          editDescripController
+                                                                  .text =
+                                                              editDescrip;
                                                           editDateController
                                                               .text = editDate;
                                                         });
@@ -414,7 +254,44 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                                                           child:
                                                                               TextFormField(
                                                                             controller:
-                                                                                editTaskController,
+                                                                                editTitleController,
+                                                                            keyboardType:
+                                                                                TextInputType.name,
+                                                                            validator:
+                                                                                (value) {
+                                                                              if (value == null || value.isEmpty) {
+                                                                                return 'Please enter your title';
+                                                                              } else if (value.length < 3) {
+                                                                                return "Your task title is too short";
+                                                                              }
+                                                                              return null;
+                                                                            },
+                                                                            decoration:
+                                                                                InputDecoration(
+                                                                              hintText: "What needs to be done ?",
+                                                                              focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.purple, width: 1)),
+                                                                              enabledBorder: OutlineInputBorder(
+                                                                                borderSide: BorderSide(color: Colors.grey, width: 1),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            45,
+                                                                        child:
+                                                                            Theme(
+                                                                          data:
+                                                                              Theme.of(context).copyWith(
+                                                                            colorScheme: ThemeData().colorScheme.copyWith(
+                                                                                  primary: Colors.purple,
+                                                                                ),
+                                                                          ),
+                                                                          child:
+                                                                              TextFormField(
+                                                                            controller:
+                                                                                editDescripController,
                                                                             keyboardType:
                                                                                 TextInputType.name,
                                                                             validator:
@@ -516,15 +393,19 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                                                             () {
                                                                           setState(
                                                                               () {
-                                                                            taskList.replaceRange(index,
+                                                                            controller.notesTitleList.replaceRange(index,
                                                                                 index + 1, {
-                                                                              editTaskController.text
+                                                                              editTitleController.text
                                                                             });
-                                                                            datesList.replaceRange(index,
+                                                                            controller.notesDescripList.replaceRange(index,
+                                                                                index + 1, {
+                                                                              editDescripController.text
+                                                                            });
+                                                                            controller.notesDatesList.replaceRange(index,
                                                                                 index + 1, {
                                                                               editDateController.text
                                                                             });
-                                                                            saveNotes();
+                                                                            controller.saveNotes();
                                                                           });
                                                                           Navigator.of(context)
                                                                               .pop();
@@ -547,14 +428,19 @@ class _ToDoScreenState extends State<ToDoScreen> {
                                                   IconButton(
                                                       onPressed: () {
                                                         setState(() {
-                                                          taskList
+                                                          controller
+                                                              .notesTitleList
                                                               .removeAt(index);
-                                                          datesList
+
+                                                          controller
+                                                              .notesDescripList
                                                               .removeAt(index);
-                                                          saveNotes();
+                                                          controller
+                                                              .notesDatesList
+                                                              .removeAt(index);
+                                                          controller
+                                                              .saveNotes();
                                                         });
-                                                        print(taskList);
-                                                        print(datesList);
                                                       },
                                                       icon: Icon(
                                                         Icons.delete,
