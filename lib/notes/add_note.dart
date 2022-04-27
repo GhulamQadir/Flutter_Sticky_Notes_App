@@ -96,6 +96,11 @@ class _AddNoteState extends State<AddNote> {
         (route) => false);
   }
 
+  goToNotes() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => NotesScreen()));
+  }
+
   @override
   void initState() {
     dateController.text = "${date.month}/${date.day}/${date.year}";
@@ -109,7 +114,16 @@ class _AddNoteState extends State<AddNote> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-            title: Center(child: Text("Add Note")),
+            title: Center(
+              child: Text("Add Note"),
+            ),
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+              onPressed: goToNotes,
+            ),
             backgroundColor: Colors.purple),
         body: SingleChildScrollView(
           child: Column(
@@ -154,6 +168,9 @@ class _AddNoteState extends State<AddNote> {
                                 return null;
                               },
                               decoration: InputDecoration(
+                                prefixIcon: Icon(
+                                  Icons.title_outlined,
+                                ),
                                 hintText: "Enter your note title",
                                 focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
@@ -195,12 +212,15 @@ class _AddNoteState extends State<AddNote> {
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your note description';
-                              } else if (value.length < 3) {
+                              } else if (value.length < 8) {
                                 return "Your note description is too short";
                               }
                               return null;
                             },
                             decoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.description,
+                              ),
                               hintText: "Enter your note description",
                               focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
