@@ -3,7 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advance_todo/notes/controller.dart';
 import 'package:flutter_advance_todo/notes.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../theme/theme.dart';
 
 class AddNote extends StatefulWidget {
   @override
@@ -110,121 +113,97 @@ class _AddNoteState extends State<AddNote> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-            title: Center(
-              child: Text("Add Note"),
+    final btnColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.white
+            : Colors.purple;
+
+    final iconColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.grey
+            : Colors.grey;
+
+    final textColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.black
+            : Colors.white;
+
+    final appBarColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.black
+            : Colors.purple;
+    final bodyColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.grey[900]
+            : Colors.white;
+
+    final focusColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.white
+            : Colors.purple;
+    return Scaffold(
+      appBar: AppBar(
+          title: Center(
+            child: Text("Add Note"),
+          ),
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
             ),
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ),
-              onPressed: goToNotes,
-            ),
-            backgroundColor: Colors.purple),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 22,
-                      ),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Title",
-                            style: TextStyle(
-                                fontSize: 22,
-                                wordSpacing: 1.3,
-                                fontWeight: FontWeight.w500),
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 7, right: 20),
-                        child: SizedBox(
-                          height: 75,
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              colorScheme: ThemeData().colorScheme.copyWith(
-                                    primary: Colors.purple,
-                                  ),
-                            ),
-                            child: TextFormField(
-                              controller: notesTitleController,
-                              keyboardType: TextInputType.name,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your note title';
-                                } else if (value.length < 3) {
-                                  return "Your note title is too short";
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(
-                                  Icons.title_outlined,
-                                ),
-                                hintText: "Enter your note title",
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.purple, width: 1)),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.grey, width: 2),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 17,
-                      ),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Description",
-                            style: TextStyle(
-                                fontSize: 22,
-                                wordSpacing: 1.3,
-                                fontWeight: FontWeight.w500),
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 7, right: 20),
+            onPressed: goToNotes,
+          ),
+          backgroundColor: appBarColor),
+      backgroundColor: bodyColor,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 22,
+                    ),
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          "Title",
+                          style: TextStyle(
+                              fontSize: 22,
+                              wordSpacing: 1.3,
+                              fontWeight: FontWeight.w500),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7, right: 20),
+                      child: SizedBox(
+                        height: 75,
                         child: Theme(
                           data: Theme.of(context).copyWith(
                             colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: Colors.purple,
+                                  primary: focusColor,
                                 ),
                           ),
                           child: TextFormField(
-                            controller: notesDescripController,
+                            controller: notesTitleController,
                             keyboardType: TextInputType.name,
-                            maxLines: 8, // <--- maxLines
-
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your note description';
-                              } else if (value.length < 8) {
-                                return "Your note description is too short";
+                                return 'Please enter your note title';
+                              } else if (value.length < 3) {
+                                return "Your note title is too short";
                               }
                               return null;
                             },
                             decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.description,
-                              ),
-                              hintText: "Enter your note description",
+                              prefixIcon:
+                                  Icon(Icons.title_outlined, color: iconColor),
+                              hintText: "Enter your note title",
                               focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.purple, width: 2)),
+                                  borderSide:
+                                      BorderSide(color: focusColor, width: 2)),
                               enabledBorder: OutlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.grey, width: 2),
@@ -233,82 +212,134 @@ class _AddNoteState extends State<AddNote> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            "Date Picker",
-                            style: TextStyle(
-                                fontSize: 19,
-                                wordSpacing: 1.3,
-                                fontWeight: FontWeight.w500),
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 7, right: 20),
-                        child: Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: ThemeData().colorScheme.copyWith(
-                                  primary: Colors.purple,
-                                ),
+                    ),
+                    SizedBox(
+                      height: 17,
+                    ),
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          "Description",
+                          style: TextStyle(
+                              fontSize: 22,
+                              wordSpacing: 1.3,
+                              fontWeight: FontWeight.w500),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7, right: 20),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ThemeData().colorScheme.copyWith(
+                                primary: focusColor,
+                              ),
+                        ),
+                        child: TextFormField(
+                          controller: notesDescripController,
+                          keyboardType: TextInputType.name,
+                          maxLines: 8, // <--- maxLines
+
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your note description';
+                            } else if (value.length < 8) {
+                              return "Your note description is too short";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.description,
+                              color: iconColor,
+                            ),
+                            hintText: "Enter your note description",
+                            focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: focusColor, width: 2)),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: 2),
+                            ),
                           ),
-                          child: TextFormField(
-                              controller: dateController,
-                              keyboardType: TextInputType.datetime,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your task date';
-                                } else if (value.length < 6) {
-                                  return "Your task date is too short";
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                  hintText: "Pick Date",
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.purple, width: 1)),
-                                  enabledBorder: OutlineInputBorder(
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          "Date Picker",
+                          style: TextStyle(
+                              fontSize: 19,
+                              wordSpacing: 1.3,
+                              fontWeight: FontWeight.w500),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7, right: 20),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ThemeData().colorScheme.copyWith(
+                                primary: Colors.purple,
+                              ),
+                        ),
+                        child: TextFormField(
+                            controller: dateController,
+                            keyboardType: TextInputType.datetime,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your task date';
+                              } else if (value.length < 6) {
+                                return "Your task date is too short";
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                                hintText: "Pick Date",
+                                focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.grey, width: 1),
+                                        color: focusColor, width: 2)),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey, width: 1),
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    Icons.calendar_today,
+                                    color: iconColor,
                                   ),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(Icons.calendar_today),
-                                    onPressed: pickDate,
-                                  ))),
+                                  onPressed: pickDate,
+                                ))),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    TextButton(
+                      onPressed: addNote,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 35, right: 35),
+                        child: Text(
+                          "Add note",
+                          style: TextStyle(fontSize: 18, color: textColor),
                         ),
                       ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      TextButton(
-                        onPressed: addNote,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 35, right: 35),
-                          child: Text(
-                            "Add note",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.purple[500]),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  ),
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(btnColor),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5)),
+                          )),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                  ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );

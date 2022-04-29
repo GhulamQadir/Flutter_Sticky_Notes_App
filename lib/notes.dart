@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison, prefer_is_empty
 
 import 'package:flutter/material.dart';
+import 'package:flutter_advance_todo/theme/theme_btn.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'notes/controller.dart';
+import 'theme/theme.dart';
 
 class NotesScreen extends StatefulWidget {
   @override
@@ -27,16 +30,28 @@ class _NotesScreenState extends State<NotesScreen> {
       initialDate: date,
       lastDate: DateTime(2100),
       builder: (context, child) {
+        final pickerColor =
+            Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+                ? Colors.white
+                : Colors.purple;
+        final headerColor =
+            Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+                ? Colors.black
+                : Colors.purple;
+        final bodyTextColor =
+            Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+                ? Colors.white
+                : Colors.black;
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.purple, // header background color
-              onPrimary: Colors.white, // header text color
-              // onSurface: Colors.green, // body text color
+              primary: headerColor, // header background color
+              onPrimary: pickerColor, // header text color
+              onSurface: bodyTextColor, // body text color
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                primary: Colors.purple, // button text color
+                primary: pickerColor, // button text color
               ),
             ),
           ),
@@ -165,392 +180,501 @@ class _NotesScreenState extends State<NotesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          appBar: AppBar(
-              title: Center(child: Text("Advance ToDo App")),
-              backgroundColor: Colors.purple),
-          floatingActionButton: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              controller.notesTitleList.length > 1
-                  ? FloatingActionButton.extended(
-                      onPressed: deleteAllDialog,
-                      backgroundColor: Colors.purple,
-                      label: Text('Clear all'),
-                      icon: Icon(Icons.clear_rounded),
-                    )
-                  : Text(""),
-              Padding(
-                padding: const EdgeInsets.only(left: 6),
-                child: FloatingActionButton.extended(
-                  onPressed: addTodo,
-                  backgroundColor: Colors.purple,
-                  label: Text("Add"),
-                  icon: Icon(Icons.add),
-                ),
-              ),
-            ],
-          ),
-          drawer: Theme(
-              data: Theme.of(context).copyWith(
-                  // canvasColor: Colors.purple,
+    final text = Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+        ? "Dark Theme"
+        : "Light Theme";
+
+    final btnColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.white
+            : Colors.purple;
+
+    final iconColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.black
+            : Colors.white;
+
+    final textColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.black
+            : Colors.white;
+
+    final appBarColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.black
+            : Colors.purple;
+    final bodyColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.grey[900]
+            : Colors.white;
+
+    final focusColor =
+        Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+            ? Colors.white
+            : Colors.purple;
+
+    return Scaffold(
+      appBar: AppBar(
+          title: Center(child: Text("Advance ToDo App")),
+          backgroundColor: appBarColor),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          controller.notesTitleList.length > 1
+              ? FloatingActionButton.extended(
+                  onPressed: deleteAllDialog,
+                  backgroundColor: btnColor,
+                  label: Text(
+                    'Clear all',
+                    style: TextStyle(color: textColor),
                   ),
-              child: Drawer(
-                  child: SafeArea(
-                      child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("adfdf"))))),
-          body: controller.notesTitleList.length < 1
-              ? Center(
-                  child: Text(
-                    "You have no notes yet",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600),
-                  ),
+                  icon: Icon(Icons.clear_rounded, color: iconColor),
                 )
-              : Column(children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                              itemCount: controller.notesTitleList.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 9, left: 5, bottom: 10),
-                                    child: Container(
-                                        decoration: BoxDecoration(
-                                            color: Color(0xfff2f2f2),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                                color: Color(0xffebe8e8),
-                                                width: 1)),
-                                        child: Column(
-                                          children: [
-                                            ListTile(
-                                              title: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 4),
-                                                child: Text(
-                                                  controller
-                                                      .notesTitleList[index],
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ),
-                                              subtitle: Text(
-                                                  controller
-                                                      .notesDescripList[index],
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14)),
-                                              trailing: Wrap(
-                                                spacing:
-                                                    0, // space between two icons
-                                                children: [
-                                                  IconButton(
-                                                      onPressed: () {
-                                                        var editTitle = controller
-                                                                .notesTitleList[
-                                                            index];
-                                                        var editDescrip = controller
-                                                                .notesDescripList[
-                                                            index];
-                                                        var editDate = controller
-                                                                .notesDatesList[
-                                                            index];
-                                                        setState(() {
-                                                          editTitleController
-                                                              .text = editTitle;
-                                                          editDescripController
-                                                                  .text =
-                                                              editDescrip;
-                                                          editDateController
-                                                              .text = editDate;
-                                                        });
-                                                        showDialog(
-                                                            context: context,
-                                                            builder: (context) {
-                                                              return AlertDialog(
-                                                                title: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
+              : Text(""),
+          Padding(
+            padding: const EdgeInsets.only(left: 6),
+            child: FloatingActionButton.extended(
+              onPressed: addTodo,
+              backgroundColor: btnColor,
+              label: Text(
+                "Add",
+                style: TextStyle(color: textColor),
+              ),
+              icon: Icon(Icons.add, color: iconColor),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: bodyColor,
+      drawer: Theme(
+          data: Theme.of(context).copyWith(
+              // canvasColor: Colors.purple,
+              ),
+          child: Drawer(
+              child: SafeArea(
+                  child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Row(
+                          children: [
+                            Text(text,
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w500)),
+                            ChangeThemeButton()
+                          ],
+                        ),
+                      ))))),
+      body: controller.notesTitleList.length < 1
+          ? Center(
+              child: Text(
+                "You have no notes yet",
+                style: TextStyle(
+                    // color: Colors.black,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600),
+              ),
+            )
+          : Column(children: [
+              SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: controller.notesTitleList.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                                padding: const EdgeInsets.only(
+                                    right: 9, left: 5, bottom: 10),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Color(0xfff2f2f2),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: Color(0xffebe8e8),
+                                            width: 1)),
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          title: Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 4),
+                                            child: Text(
+                                              controller.notesTitleList[index],
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                              controller
+                                                  .notesDescripList[index],
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 14)),
+                                          trailing: Wrap(
+                                            spacing:
+                                                0, // space between two icons
+                                            children: [
+                                              IconButton(
+                                                  onPressed: () {
+                                                    var editTitle = controller
+                                                        .notesTitleList[index];
+                                                    var editDescrip = controller
+                                                            .notesDescripList[
+                                                        index];
+                                                    var editDate = controller
+                                                        .notesDatesList[index];
+                                                    setState(() {
+                                                      editTitleController.text =
+                                                          editTitle;
+                                                      editDescripController
+                                                          .text = editDescrip;
+                                                      editDateController.text =
+                                                          editDate;
+                                                    });
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return AlertDialog(
+                                                            backgroundColor:
+                                                                bodyColor,
+                                                            title: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                    "Edit ToDo"),
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Align(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .topRight,
+                                                                    child: IconButton(
+                                                                        onPressed:
+                                                                            closeDialog,
+                                                                        icon: Icon(
+                                                                            Icons.close))),
+                                                              ],
+                                                            ),
+                                                            content: Form(
+                                                              key: _formKey,
+                                                              child:
+                                                                  SingleChildScrollView(
+                                                                child: Column(
                                                                   children: [
-                                                                    Text(
-                                                                        "Edit ToDo"),
+                                                                    Align(
+                                                                        alignment:
+                                                                            Alignment
+                                                                                .topLeft,
+                                                                        child:
+                                                                            Text(
+                                                                          "Title",
+                                                                          style: TextStyle(
+                                                                              fontSize: 19,
+                                                                              wordSpacing: 1.3,
+                                                                              fontWeight: FontWeight.w500),
+                                                                        )),
                                                                     SizedBox(
-                                                                      width: 10,
+                                                                      height: 6,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          45,
+                                                                      child:
+                                                                          Theme(
+                                                                        data: Theme.of(context)
+                                                                            .copyWith(
+                                                                          colorScheme: ThemeData()
+                                                                              .colorScheme
+                                                                              .copyWith(
+                                                                                primary: focusColor,
+                                                                              ),
+                                                                        ),
+                                                                        child:
+                                                                            TextFormField(
+                                                                          controller:
+                                                                              editTitleController,
+                                                                          keyboardType:
+                                                                              TextInputType.name,
+                                                                          validator:
+                                                                              (value) {
+                                                                            if (value == null ||
+                                                                                value.isEmpty) {
+                                                                              return 'Please enter your note title';
+                                                                            } else if (value.length <
+                                                                                3) {
+                                                                              return "Your note title is too short";
+                                                                            }
+                                                                            return null;
+                                                                          },
+                                                                          decoration:
+                                                                              InputDecoration(
+                                                                            prefixIcon:
+                                                                                Icon(
+                                                                              Icons.title,
+                                                                              color: Colors.grey,
+                                                                            ),
+                                                                            hintText:
+                                                                                "Enter your note title",
+                                                                            focusedBorder:
+                                                                                OutlineInputBorder(borderSide: BorderSide(color: focusColor, width: 2)),
+                                                                            enabledBorder:
+                                                                                OutlineInputBorder(
+                                                                              borderSide: BorderSide(color: Colors.grey, width: 1),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          25,
                                                                     ),
                                                                     Align(
                                                                         alignment:
                                                                             Alignment
-                                                                                .topRight,
-                                                                        child: IconButton(
-                                                                            onPressed:
-                                                                                closeDialog,
-                                                                            icon:
-                                                                                Icon(Icons.close))),
-                                                                  ],
-                                                                ),
-                                                                content: Form(
-                                                                  key: _formKey,
-                                                                  child:
-                                                                      SingleChildScrollView(
-                                                                    child:
-                                                                        Column(
-                                                                      children: [
-                                                                        Align(
-                                                                            alignment:
-                                                                                Alignment.topLeft,
-                                                                            child: Text(
-                                                                              "Title",
-                                                                              style: TextStyle(fontSize: 19, wordSpacing: 1.3, fontWeight: FontWeight.w500),
-                                                                            )),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              6,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              45,
-                                                                          child:
-                                                                              Theme(
-                                                                            data:
-                                                                                Theme.of(context).copyWith(
-                                                                              colorScheme: ThemeData().colorScheme.copyWith(
-                                                                                    primary: Colors.purple,
-                                                                                  ),
-                                                                            ),
-                                                                            child:
-                                                                                TextFormField(
-                                                                              controller: editTitleController,
-                                                                              keyboardType: TextInputType.name,
-                                                                              validator: (value) {
-                                                                                if (value == null || value.isEmpty) {
-                                                                                  return 'Please enter your note title';
-                                                                                } else if (value.length < 3) {
-                                                                                  return "Your note title is too short";
-                                                                                }
-                                                                                return null;
-                                                                              },
-                                                                              decoration: InputDecoration(
-                                                                                hintText: "Enter your note title",
-                                                                                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.purple, width: 1)),
-                                                                                enabledBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: Colors.grey, width: 1),
-                                                                                ),
+                                                                                .topLeft,
+                                                                        child:
+                                                                            Text(
+                                                                          "Description",
+                                                                          style: TextStyle(
+                                                                              fontSize: 19,
+                                                                              wordSpacing: 1.3,
+                                                                              fontWeight: FontWeight.w500),
+                                                                        )),
+                                                                    SizedBox(
+                                                                      height: 6,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          100,
+                                                                      child:
+                                                                          Theme(
+                                                                        data: Theme.of(context)
+                                                                            .copyWith(
+                                                                          colorScheme: ThemeData()
+                                                                              .colorScheme
+                                                                              .copyWith(
+                                                                                primary: focusColor,
                                                                               ),
-                                                                            ),
-                                                                          ),
                                                                         ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              25,
-                                                                        ),
-                                                                        Align(
-                                                                            alignment:
-                                                                                Alignment.topLeft,
-                                                                            child: Text(
-                                                                              "Description",
-                                                                              style: TextStyle(fontSize: 19, wordSpacing: 1.3, fontWeight: FontWeight.w500),
-                                                                            )),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              6,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              100,
-                                                                          child:
-                                                                              Theme(
-                                                                            data:
-                                                                                Theme.of(context).copyWith(
-                                                                              colorScheme: ThemeData().colorScheme.copyWith(
-                                                                                    primary: Colors.purple,
-                                                                                  ),
-                                                                            ),
-                                                                            child:
-                                                                                TextFormField(
-                                                                              controller: editDescripController,
-                                                                              keyboardType: TextInputType.name,
-                                                                              maxLines: 4,
-                                                                              validator: (value) {
-                                                                                if (value == null || value.isEmpty) {
-                                                                                  return 'Please enter your note description';
-                                                                                } else if (value.length < 8) {
-                                                                                  return "Your note description is too short";
-                                                                                }
-                                                                                return null;
-                                                                              },
-                                                                              decoration: InputDecoration(
-                                                                                hintText: "Enter your note description",
-                                                                                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.purple, width: 1)),
-                                                                                enabledBorder: OutlineInputBorder(
-                                                                                  borderSide: BorderSide(color: Colors.grey, width: 1),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              30,
-                                                                        ),
-                                                                        Align(
-                                                                            alignment:
-                                                                                Alignment.topLeft,
-                                                                            child: Text(
-                                                                              "Date Picker",
-                                                                              style: TextStyle(fontSize: 19, wordSpacing: 1.3, fontWeight: FontWeight.w500),
-                                                                            )),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              6,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              45,
-                                                                          child:
-                                                                              Theme(
-                                                                            data:
-                                                                                Theme.of(context).copyWith(
-                                                                              colorScheme: ThemeData().colorScheme.copyWith(
-                                                                                    primary: Colors.purple,
-                                                                                  ),
-                                                                            ),
-                                                                            child: TextFormField(
-                                                                                controller: editDateController,
-                                                                                keyboardType: TextInputType.datetime,
-                                                                                validator: (value) {
-                                                                                  if (value == null || value.isEmpty) {
-                                                                                    return 'Please enter your task date';
-                                                                                  } else if (value.length < 6) {
-                                                                                    return "Your task date is too short";
-                                                                                  }
-                                                                                  return null;
-                                                                                },
-                                                                                decoration: InputDecoration(
-                                                                                    hintText: "Pick Date",
-                                                                                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.purple, width: 1)),
-                                                                                    enabledBorder: OutlineInputBorder(
-                                                                                      borderSide: BorderSide(color: Colors.grey, width: 1),
-                                                                                    ),
-                                                                                    suffixIcon: IconButton(
-                                                                                      icon: Icon(Icons.calendar_today),
-                                                                                      onPressed: pickDate,
-                                                                                    ))),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              23,
-                                                                        ),
-                                                                        TextButton(
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(left: 40, right: 40),
-                                                                            child:
-                                                                                Text(
-                                                                              "Edit task",
-                                                                              style: TextStyle(fontSize: 18, color: Colors.white),
-                                                                            ),
-                                                                          ),
-                                                                          style: ButtonStyle(
-                                                                              backgroundColor: MaterialStateProperty.all(Colors.purple[500]),
-                                                                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                                                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                                                              )),
-                                                                          onPressed:
-                                                                              () {
-                                                                            if (!_formKey.currentState!.validate()) {
-                                                                              return;
+                                                                        child:
+                                                                            TextFormField(
+                                                                          controller:
+                                                                              editDescripController,
+                                                                          keyboardType:
+                                                                              TextInputType.name,
+                                                                          maxLines:
+                                                                              4,
+                                                                          validator:
+                                                                              (value) {
+                                                                            if (value == null ||
+                                                                                value.isEmpty) {
+                                                                              return 'Please enter your note description';
+                                                                            } else if (value.length <
+                                                                                8) {
+                                                                              return "Your note description is too short";
                                                                             }
-                                                                            setState(() {
-                                                                              controller.notesTitleList.replaceRange(index, index + 1, {
+                                                                            return null;
+                                                                          },
+                                                                          decoration:
+                                                                              InputDecoration(
+                                                                            prefixIcon:
+                                                                                Icon(
+                                                                              Icons.description,
+                                                                              color: Colors.grey,
+                                                                            ),
+                                                                            hintText:
+                                                                                "Enter your note description",
+                                                                            focusedBorder:
+                                                                                OutlineInputBorder(borderSide: BorderSide(color: focusColor, width: 2)),
+                                                                            enabledBorder:
+                                                                                OutlineInputBorder(
+                                                                              borderSide: BorderSide(color: Colors.grey, width: 1),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          30,
+                                                                    ),
+                                                                    Align(
+                                                                        alignment:
+                                                                            Alignment
+                                                                                .topLeft,
+                                                                        child:
+                                                                            Text(
+                                                                          "Date Picker",
+                                                                          style: TextStyle(
+                                                                              fontSize: 19,
+                                                                              wordSpacing: 1.3,
+                                                                              fontWeight: FontWeight.w500),
+                                                                        )),
+                                                                    SizedBox(
+                                                                      height: 6,
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          45,
+                                                                      child:
+                                                                          Theme(
+                                                                        data: Theme.of(context)
+                                                                            .copyWith(
+                                                                          colorScheme: ThemeData()
+                                                                              .colorScheme
+                                                                              .copyWith(
+                                                                                primary: focusColor,
+                                                                              ),
+                                                                        ),
+                                                                        child: TextFormField(
+                                                                            controller: editDateController,
+                                                                            keyboardType: TextInputType.datetime,
+                                                                            validator: (value) {
+                                                                              if (value == null || value.isEmpty) {
+                                                                                return 'Please enter your task date';
+                                                                              } else if (value.length < 6) {
+                                                                                return "Your task date is too short";
+                                                                              }
+                                                                              return null;
+                                                                            },
+                                                                            decoration: InputDecoration(
+                                                                                hintText: "Pick Date",
+                                                                                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: focusColor, width: 1)),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderSide: BorderSide(color: Colors.grey, width: 1),
+                                                                                ),
+                                                                                suffixIcon: IconButton(
+                                                                                  icon: Icon(Icons.calendar_today, color: Colors.grey),
+                                                                                  onPressed: pickDate,
+                                                                                ))),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          23,
+                                                                    ),
+                                                                    TextButton(
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: const EdgeInsets.only(
+                                                                            left:
+                                                                                40,
+                                                                            right:
+                                                                                40),
+                                                                        child:
+                                                                            Text(
+                                                                          "Edit task",
+                                                                          style: TextStyle(
+                                                                              fontSize: 18,
+                                                                              color: textColor),
+                                                                        ),
+                                                                      ),
+                                                                      style: ButtonStyle(
+                                                                          backgroundColor: MaterialStateProperty.all(btnColor),
+                                                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                                                          )),
+                                                                      onPressed:
+                                                                          () {
+                                                                        if (!_formKey
+                                                                            .currentState!
+                                                                            .validate()) {
+                                                                          return;
+                                                                        }
+                                                                        setState(
+                                                                            () {
+                                                                          controller.notesTitleList.replaceRange(
+                                                                              index,
+                                                                              index + 1,
+                                                                              {
                                                                                 editTitleController.text
                                                                               });
-                                                                              controller.notesDescripList.replaceRange(index, index + 1, {
+                                                                          controller.notesDescripList.replaceRange(
+                                                                              index,
+                                                                              index + 1,
+                                                                              {
                                                                                 editDescripController.text
                                                                               });
-                                                                              controller.notesDatesList.replaceRange(index, index + 1, {
+                                                                          controller.notesDatesList.replaceRange(
+                                                                              index,
+                                                                              index + 1,
+                                                                              {
                                                                                 editDateController.text
                                                                               });
-                                                                              controller.saveNotes();
-                                                                            });
-                                                                            Navigator.of(context).pop();
-                                                                          },
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              15,
-                                                                        ),
-                                                                      ],
+                                                                          controller
+                                                                              .saveNotes();
+                                                                        });
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
                                                                     ),
-                                                                  ),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          15,
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                              );
-                                                            });
-                                                      },
-                                                      icon: Icon(
-                                                        Icons.edit,
-                                                        color: Colors.purple,
-                                                      )),
-                                                  IconButton(
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          controller
-                                                              .notesTitleList
-                                                              .removeAt(index);
-
-                                                          controller
-                                                              .notesDescripList
-                                                              .removeAt(index);
-                                                          controller
-                                                              .notesDatesList
-                                                              .removeAt(index);
-                                                          controller
-                                                              .saveNotes();
+                                                              ),
+                                                            ),
+                                                          );
                                                         });
-                                                      },
-                                                      icon: Icon(
-                                                        Icons.delete,
-                                                        color: Colors.red[600],
-                                                        size: 22,
-                                                      )),
-                                                ],
-                                              ),
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.edit,
+                                                    color: Colors.purple,
+                                                  )),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      controller.notesTitleList
+                                                          .removeAt(index);
+
+                                                      controller
+                                                          .notesDescripList
+                                                          .removeAt(index);
+                                                      controller.notesDatesList
+                                                          .removeAt(index);
+                                                      controller.saveNotes();
+                                                    });
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red[600],
+                                                    size: 22,
+                                                  )),
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 16, top: 2, bottom: 3),
+                                          child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Text(
+                                              controller.notesDatesList[index],
+                                              style: TextStyle(
+                                                  color: Colors.black),
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 16, top: 2, bottom: 3),
-                                              child: Align(
-                                                alignment: Alignment.topLeft,
-                                                child: Text(controller
-                                                    .notesDatesList[index]),
-                                              ),
-                                            ),
-                                          ],
-                                        )));
-                              }),
-                        ),
-                      ],
+                                          ),
+                                        ),
+                                      ],
+                                    )));
+                          }),
                     ),
-                  )
-                ]),
-        ));
+                  ],
+                ),
+              )
+            ]),
+    );
   }
 }
