@@ -31,15 +31,32 @@ class _AddNoteState extends State<AddNote> {
       initialDate: date,
       lastDate: DateTime(2100),
       builder: (context, child) {
+        final headerTextColor =
+            Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+                ? Colors.white
+                : Colors.white;
+        final btnTextColor =
+            Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+                ? Colors.white
+                : Colors.purple;
+        final headerColor =
+            Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+                ? Colors.black
+                : Colors.purple;
+        final bodyTextColor =
+            Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+                ? Colors.white
+                : Colors.black;
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.purple,
-              onPrimary: Colors.white,
+              primary: headerColor, // header background color
+              onPrimary: headerTextColor, // header text color
+              onSurface: bodyTextColor, // body text color
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                primary: Colors.purple, // button text color
+                primary: btnTextColor, // button text color
               ),
             ),
           ),
@@ -47,7 +64,6 @@ class _AddNoteState extends State<AddNote> {
         );
       },
     );
-
     if (newDate == null) return;
     setState(() {
       date = newDate;

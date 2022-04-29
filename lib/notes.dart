@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison, prefer_is_empty
+// ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison, prefer_is_empty, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:flutter_advance_todo/theme/theme_btn.dart';
@@ -30,7 +30,11 @@ class _NotesScreenState extends State<NotesScreen> {
       initialDate: date,
       lastDate: DateTime(2100),
       builder: (context, child) {
-        final pickerColor =
+        final headerTextColor =
+            Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
+                ? Colors.white
+                : Colors.white;
+        final btnTextColor =
             Provider.of<ThemeProvider>(context).themeMode == ThemeMode.dark
                 ? Colors.white
                 : Colors.purple;
@@ -46,12 +50,12 @@ class _NotesScreenState extends State<NotesScreen> {
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
               primary: headerColor, // header background color
-              onPrimary: pickerColor, // header text color
+              onPrimary: headerTextColor, // header text color
               onSurface: bodyTextColor, // body text color
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                primary: pickerColor, // button text color
+                primary: btnTextColor, // button text color
               ),
             ),
           ),
@@ -541,7 +545,7 @@ class _NotesScreenState extends State<NotesScreen> {
                                                                             keyboardType: TextInputType.datetime,
                                                                             validator: (value) {
                                                                               if (value == null || value.isEmpty) {
-                                                                                return 'Please enter your task date';
+                                                                                return 'Please pick your task date';
                                                                               } else if (value.length < 6) {
                                                                                 return "Your task date is too short";
                                                                               }
