@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison, prefer_is_empty, deprecated_member_use
+// ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison, prefer_is_empty, deprecated_member_use, avoid_single_cascade_in_expression_statements
 
 import 'dart:convert';
 
