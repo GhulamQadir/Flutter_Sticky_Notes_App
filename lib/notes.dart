@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison, prefer_is_empty, deprecated_member_use
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_advance_todo/theme/theme_btn.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'notes/controller.dart';
+import 'notes/model.dart';
 import 'theme/theme.dart';
 
 class NotesScreen extends StatefulWidget {
@@ -83,24 +86,11 @@ class _NotesScreenState extends State<NotesScreen> {
   SharedPreferences? sharedPreferences;
 
   getNotes() async {
-    sharedPreferences = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    List<String>? getNotesTitleList =
-        sharedPreferences?.getStringList('notesTitleList');
-    controller.notesTitleList =
-        getNotesTitleList!.map((e) => e.toString()).toList();
-    setState(() {});
-
-    List<String>? getNotesDescripList =
-        sharedPreferences?.getStringList('notesDescripList');
-    controller.notesDescripList =
-        getNotesDescripList!.map((e) => e.toString()).toList();
-    setState(() {});
-
-    List<String>? getNotesDateList =
-        sharedPreferences?.getStringList('notesDateList');
-    controller.notesDatesList =
-        getNotesDateList!.map((e) => e.toString()).toList();
+    List<String>? notesList = prefs.getStringList("notes");
+    controller.notes =
+        notesList!.map((e) => Note.fromJson(json.decode(e))).toList();
     setState(() {});
   }
 
@@ -174,10 +164,8 @@ class _NotesScreenState extends State<NotesScreen> {
 
   deleteAll() {
     setState(() {
-      controller.notesTitleList.clear();
-      controller.notesDescripList.clear();
-      controller.notesDatesList.clear();
-      controller.saveNotes();
+      controller.notes.clear();
+      // controller.saveNotes();
     });
     Navigator.of(context).pop();
   }
@@ -224,7 +212,7 @@ class _NotesScreenState extends State<NotesScreen> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          controller.notesTitleList.length > 1
+          controller.notes.length > 1
               ? FloatingActionButton.extended(
                   onPressed: deleteAllDialog,
                   backgroundColor: btnColor,
@@ -269,7 +257,7 @@ class _NotesScreenState extends State<NotesScreen> {
                           ],
                         ),
                       ))))),
-      body: controller.notesTitleList.length < 1
+      body: controller.notes.length < 1
           ? Center(
               child: Text(
                 "You have no notes yet",
@@ -288,7 +276,7 @@ class _NotesScreenState extends State<NotesScreen> {
                   children: [
                     Expanded(
                       child: ListView.builder(
-                          itemCount: controller.notesTitleList.length,
+                          itemCount: controller.notes.length,
                           itemBuilder: (context, index) {
                             return Padding(
                                 padding: const EdgeInsets.only(
@@ -307,7 +295,9 @@ class _NotesScreenState extends State<NotesScreen> {
                                             padding: const EdgeInsets.only(
                                                 bottom: 4),
                                             child: Text(
-                                              controller.notesTitleList[index],
+                                              controller.notes[index].title
+                                                  .toString()
+                                                  .toString(),
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 18,
@@ -315,8 +305,9 @@ class _NotesScreenState extends State<NotesScreen> {
                                             ),
                                           ),
                                           subtitle: Text(
-                                              controller
-                                                  .notesDescripList[index],
+                                              controller.notes[index]
+                                                      .description ??
+                                                  '',
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 14)),
@@ -327,19 +318,19 @@ class _NotesScreenState extends State<NotesScreen> {
                                               IconButton(
                                                   onPressed: () {
                                                     var editTitle = controller
-                                                        .notesTitleList[index];
+                                                        .notes[index].title;
                                                     var editDescrip = controller
-                                                            .notesDescripList[
-                                                        index];
+                                                        .notes[index]
+                                                        .description;
                                                     var editDate = controller
-                                                        .notesDatesList[index];
+                                                        .notes[index].date;
                                                     setState(() {
                                                       editTitleController.text =
-                                                          editTitle;
+                                                          editTitle!;
                                                       editDescripController
-                                                          .text = editDescrip;
+                                                          .text = editDescrip!;
                                                       editDateController.text =
-                                                          editDate;
+                                                          editDate!;
                                                     });
                                                     showDialog(
                                                         context: context,
@@ -590,36 +581,36 @@ class _NotesScreenState extends State<NotesScreen> {
                                                                           )),
                                                                       onPressed:
                                                                           () {
-                                                                        if (!_formKey
-                                                                            .currentState!
-                                                                            .validate()) {
-                                                                          return;
-                                                                        }
-                                                                        setState(
-                                                                            () {
-                                                                          controller.notesTitleList.replaceRange(
-                                                                              index,
-                                                                              index + 1,
-                                                                              {
-                                                                                editTitleController.text
-                                                                              });
-                                                                          controller.notesDescripList.replaceRange(
-                                                                              index,
-                                                                              index + 1,
-                                                                              {
-                                                                                editDescripController.text
-                                                                              });
-                                                                          controller.notesDatesList.replaceRange(
-                                                                              index,
-                                                                              index + 1,
-                                                                              {
-                                                                                editDateController.text
-                                                                              });
-                                                                          controller
-                                                                              .saveNotes();
-                                                                        });
-                                                                        Navigator.of(context)
-                                                                            .pop();
+                                                                        // if (!_formKey
+                                                                        //     .currentState!
+                                                                        //     .validate()) {
+                                                                        //   return;
+                                                                        // }
+                                                                        // setState(
+                                                                        //     () {
+                                                                        //   controller.notes..replaceRange(
+                                                                        //       index,
+                                                                        //       index + 1,
+                                                                        //       {
+                                                                        //         editTitleController.text
+                                                                        //       });
+                                                                        //   controller.notesDescripList.replaceRange(
+                                                                        //       index,
+                                                                        //       index + 1,
+                                                                        //       {
+                                                                        //         editDescripController.text
+                                                                        //       });
+                                                                        //   controller.notesDatesList.replaceRange(
+                                                                        //       index,
+                                                                        //       index + 1,
+                                                                        //       {
+                                                                        //         editDateController.text
+                                                                        //       });
+                                                                        //   controller
+                                                                        //       .saveNotes();
+                                                                        // });
+                                                                        // Navigator.of(context)
+                                                                        //     .pop();
                                                                       },
                                                                     ),
                                                                     SizedBox(
@@ -640,15 +631,15 @@ class _NotesScreenState extends State<NotesScreen> {
                                               IconButton(
                                                   onPressed: () {
                                                     setState(() {
-                                                      controller.notesTitleList
+                                                      controller.notes
                                                           .removeAt(index);
 
-                                                      controller
-                                                          .notesDescripList
-                                                          .removeAt(index);
-                                                      controller.notesDatesList
-                                                          .removeAt(index);
-                                                      controller.saveNotes();
+                                                      // controller
+                                                      //     .notesDescripList
+                                                      //     .removeAt(index);
+                                                      // controller.notesDatesList
+                                                      //     .removeAt(index);
+                                                      // controller.saveNotes();
                                                     });
                                                   },
                                                   icon: Icon(
@@ -665,7 +656,8 @@ class _NotesScreenState extends State<NotesScreen> {
                                           child: Align(
                                             alignment: Alignment.topLeft,
                                             child: Text(
-                                              controller.notesDatesList[index],
+                                              controller.notes[index]
+                                                  .toString(),
                                               style: TextStyle(
                                                   color: Colors.black),
                                             ),

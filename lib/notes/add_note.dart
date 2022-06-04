@@ -1,8 +1,11 @@
 // ignore_for_file: prefer_const_constructors, avoid_print
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_advance_todo/notes/controller.dart';
 import 'package:flutter_advance_todo/notes.dart';
+import 'package:flutter_advance_todo/notes/model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -75,24 +78,11 @@ class _AddNoteState extends State<AddNote> {
   SharedPreferences? sharedPreferences;
 
   getNotes() async {
-    sharedPreferences = await SharedPreferences.getInstance();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    List<String>? getNotesTitleList =
-        sharedPreferences?.getStringList('notesTitleList');
-    controller.notesTitleList =
-        getNotesTitleList!.map((e) => e.toString()).toList();
-    setState(() {});
-
-    List<String>? getNotesDescripList =
-        sharedPreferences?.getStringList('notesDescripList');
-    controller.notesDescripList =
-        getNotesDescripList!.map((e) => e.toString()).toList();
-    setState(() {});
-
-    List<String>? getNotesDateList =
-        sharedPreferences?.getStringList('notesDateList');
-    controller.notesDatesList =
-        getNotesDateList!.map((e) => e.toString()).toList();
+    List<String>? notesList = prefs.getStringList("notes");
+    controller.notes =
+        notesList!.map((e) => Note.fromJson(json.decode(e))).toList();
     setState(() {});
   }
 
@@ -102,14 +92,24 @@ class _AddNoteState extends State<AddNote> {
     }
 
     setState(() {
-      controller.notesTitleList.add(notesTitleController.text);
-      controller.notesDescripList.add(notesDescripController.text);
-      controller.notesDatesList.add(dateController.text);
+      controller.notes.add(controller.saveNote(notesTitleController.text,
+          notesDescripController.text, dateController.text));
+      // controller.notesDescripList.add(notesDescripController.text);
+      // controller.notesDatesList.add(dateController.text);
     });
     controller.saveNotes();
-    print(controller.notesTitleList);
-    print(controller.notesDescripList);
-    print(controller.notesDatesList);
+    // print(jsonEncode(controller.notes));
+
+    // for (var i = 0; i < controller.notes.length; i++) {
+    //   print("Title of note is: ${controller.notes[i].title}");
+    //   print("Date of note is: ${controller.notes[i].date}");
+    //   print("Description of note is: ${controller.notes[i].description}");
+    // }
+
+    // controller.saveNotes();
+    // print(controller.notesTitleList);
+    // print(controller.notesDescripList);
+    // print(controller.notesDatesList);
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => NotesScreen()),
         (route) => false);

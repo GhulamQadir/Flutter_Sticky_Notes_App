@@ -1,29 +1,36 @@
+// ignore_for_file: avoid_print
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_advance_todo/notes/model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotesController {
   SharedPreferences? sharedPreferences;
 
-  List<String> notesTitleList = [];
-  List<String> notesDescripList = [];
-  List<String> notesDatesList = [];
+  // List<String> notesTitleList = [];
+  // List<String> notesDescripList = [];
+  // List<String> notesDatesList = [];
+
+  List<Note> notes = [];
+
+  Note saveNote(
+    String title,
+    String description,
+    String date,
+  ) {
+    return Note(
+      title,
+      description,
+      date,
+    );
+  }
 
   saveNotes() async {
-    sharedPreferences = await SharedPreferences.getInstance();
-
-    List<String> saveNotesTitle =
-        notesTitleList.map((i) => i.toString()).toList();
-    sharedPreferences!.setStringList("notesTitleList", saveNotesTitle);
-
-    List<String> saveNotesDescrip =
-        notesDescripList.map((i) => i.toString()).toList();
-    sharedPreferences!.setStringList("notesDescripList", saveNotesDescrip);
-
-    List<String> saveNotesDate =
-        notesDatesList.map((i) => i.toString()).toList();
-    sharedPreferences!.setStringList("notesDateList", saveNotesDate);
-    print(saveNotesTitle);
-    print(saveNotesDescrip);
-    print(saveNotesDate);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> notesList = notes.map((i) => json.encode(i.toJson())).toList();
+    sharedPreferences!.setStringList("notes", notesList);
+    print(notes);
   }
 }
