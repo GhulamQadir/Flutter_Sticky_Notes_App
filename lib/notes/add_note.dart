@@ -98,7 +98,7 @@ class _AddNoteState extends State<AddNote> {
       // controller.notesDatesList.add(dateController.text);
     });
     controller.saveNotes();
-    // print(jsonEncode(controller.notes));
+    print(jsonEncode(controller.notes));
 
     // for (var i = 0; i < controller.notes.length; i++) {
     //   print("Title of note is: ${controller.notes[i].title}");

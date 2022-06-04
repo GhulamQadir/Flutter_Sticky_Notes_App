@@ -30,7 +30,7 @@ class NotesController {
   saveNotes() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> notesList = notes.map((i) => json.encode(i.toJson())).toList();
-    sharedPreferences!.setStringList("notes", notesList);
-    print(notes);
+    prefs.setStringList("notes", notesList);
+    // print(jsonEncode(notes));
   }
 }
