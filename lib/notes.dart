@@ -207,7 +207,7 @@ class _NotesScreenState extends State<NotesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Center(child: Text("Advance ToDo App")),
+          title: Center(child: Text("Sticky Notes App")),
           backgroundColor: appBarColor),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
